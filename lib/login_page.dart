@@ -9,7 +9,6 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  String? uid;
   String? error;
   bool loading = false;
 
@@ -19,18 +18,13 @@ class _LoginPageState extends State<LoginPage> {
       error = null;
     });
     try {
-      final result = await FirebaseAuth.instance.signInAnonymously();
-      setState(() {
-        uid = result.user?.uid;
-      });
+      await FirebaseAuth.instance.signInAnonymously();
     } catch (e) {
       setState(() {
         error = e.toString();
+        loading = false;
       });
     }
-    setState(() {
-      loading = false;
-    });
   }
 
   @override
@@ -45,12 +39,10 @@ class _LoginPageState extends State<LoginPage> {
             children: [
               const Text('와글와글', style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold)),
               const SizedBox(height: 32),
-              if (uid == null)
-                ElevatedButton(
-                  onPressed: loading ? null : login,
-                  child: Text(loading ? '로그인 중...' : '시작하기'),
-                ),
-              if (uid != null) Text('로그인 성공!\n내 아이디: $uid', textAlign: TextAlign.center),
+              ElevatedButton(
+                onPressed: loading ? null : login,
+                child: Text(loading ? '로그인 중...' : '시작하기'),
+              ),
               if (error != null) ...[
                 const SizedBox(height: 16),
                 Text(error!, style: const TextStyle(color: Colors.red)),
